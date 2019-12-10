@@ -1,15 +1,14 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Alert} from 'react-native';
 import {Item, Input, Form, Label, Button, Thumbnail, Text} from 'native-base';
-
 import Logo from '../image/github.png';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import axios from 'axios';
-// import axios from 'axios';
 export default class RegisterForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      name: '',
       email: '',
       password: '',
       isLoading: false,
@@ -31,8 +30,9 @@ export default class RegisterForm extends Component {
 
   //Register
   register = () => {
-    const {email, password} = this.state;
+    const {name, email, password} = this.state;
     const data = {
+      name: name,
       email: email,
       password: password,
     };
@@ -46,7 +46,10 @@ export default class RegisterForm extends Component {
     } else {
       try {
         axios
-          .post('https://reqres.in/api/register', data)
+          .post(
+            'http://ec2-3-81-168-96.compute-1.amazonaws.com/api/register',
+            data,
+          )
           .then(function(res) {
             console.log(res);
             Alert.alert('Notification', 'Login Success');
@@ -62,7 +65,7 @@ export default class RegisterForm extends Component {
   };
 
   render() {
-    const {email, password} = this.state;
+    const {name, email, password} = this.state;
     return (
       <View style={styles.containerStyle}>
         <View style={styles.logoStyle}>
@@ -72,6 +75,16 @@ export default class RegisterForm extends Component {
           </Text>
         </View>
         <Form style={styles.formLoginStyle}>
+          <Item floatingLabel>
+            <Label>
+              <Text style={styles.inputStyle}>Name</Text>
+            </Label>
+            <Input
+              style={styles.inputStyle}
+              value={name}
+              onChangeText={value => this.setState({name: value})}
+            />
+          </Item>
           <Item floatingLabel>
             <Label>
               <Text style={styles.inputStyle}>Email</Text>
