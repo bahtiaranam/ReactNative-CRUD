@@ -1,5 +1,11 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, TouchableOpacity, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Alert,
+  AsyncStorage,
+} from 'react-native';
 import {Item, Input, Form, Label, Button, Thumbnail, Text} from 'native-base';
 import axios from 'axios';
 import Logo from '../image/github.png';
@@ -25,7 +31,7 @@ export default class LoginForm extends Component {
     },
   };
 
-  login = () => {
+  login = async () => {
     const {email, password} = this.state;
     const data = {
       email: email,
@@ -40,14 +46,21 @@ export default class LoginForm extends Component {
       Alert.alert('Notification', 'Password required');
     } else {
       try {
-        axios
-          .post('https://reqres.in/api/login', data)
-          .then(function(res) {
-            console.log(res);
+        await axios
+          .post(
+            'http://ec2-3-81-168-96.compute-1.amazonaws.com/api/login',
+            data,
+          )
+          .then(async response => {
+            console.log(response.data.access_token);
+            await AsyncStorage.setItem(
+              'access_token',
+              response.data.access_token,
+            );
             Alert.alert('Notification', 'Login Success');
+            this.props.navigation.navigate('Home');
           })
           .catch(function(error) {
-            console.log(error);
             Alert.alert('Notification', 'Login Failed');
           });
       } catch (error) {
